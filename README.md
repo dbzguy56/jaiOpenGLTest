@@ -1,6 +1,9 @@
 # Jai OpenGL Demo
 
-[![Watch the video](https://img.youtube.com/vi/ck2bvbOGXHA/default.jpg)](https://youtu.be/ck2bvbOGXHA)
+## Demo on Youtube
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=ck2bvbOGXHA" target="_blank">
+ <img src="http://img.youtube.com/vi/ck2bvbOGXHA/mqdefault.jpg" alt="Watch the video" width="240" height="180" border="10" />
+</a>
 
 ## Running the demo
 You can run the demo by either double clicking the .exe under the "run_tree" directory or by the following command:
