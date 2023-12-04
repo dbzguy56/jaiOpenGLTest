@@ -7,7 +7,10 @@
 
 ## Running the demo
 You can run the demo by either double clicking the .exe under the "run_tree" directory or by the following command:
-`C:\jaiOpenGLTest> .\run.bat`
+
+```bash
+.\run.bat
+```
 
 ### Controls
 | Input | Action |
@@ -15,9 +18,13 @@ You can run the demo by either double clicking the .exe under the "run_tree" dir
 | Mouse | Aim Camera |
 | WASD | Camera Movement |
 | Backspace | Exit program |
-(Backspace because of my keyboard :))
+
+(Backspace because of my keyboard :D)
 
 ## Building
 Unfortunately jai isn't released to the public just yet. So if you don't have the compiler, you're out of luck!
 Otherwise you just do:
-`C:\jaiOpenGLTest> .\build.bat`
+
+```bash
+.\build.bat
+```
