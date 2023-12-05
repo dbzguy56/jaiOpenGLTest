@@ -321,10 +321,10 @@ main :: () {
             camera_pos -= camera_speed * camera_front;
         }
         if input_button_states[#char "A"] & .DOWN {
-            camera_pos -= normalize_or_z_axis(cross(camera_front, camera_up)) * camera_speed;
+            camera_pos -= normalize(cross(camera_front, camera_up), fallback=.{z=1}) * camera_speed;
         }
         if input_button_states[#char "D"] & .DOWN {
-            camera_pos += normalize_or_z_axis(cross(camera_front, camera_up)) * camera_speed;
+            camera_pos += normalize(cross(camera_front, camera_up), fallback=.{z=1}) * camera_speed;
         }
 
         if mouse_delta_z > 0 {
@@ -357,7 +357,7 @@ main :: () {
         direction_x := cos(deg_to_rad(yaw) * cos(deg_to_rad(pitch)));
         direction_y := sin(deg_to_rad(pitch));
         direction_z := sin(deg_to_rad(yaw) * cos(deg_to_rad(pitch)));
-        camera_front = normalize_or_z_axis(xyz(direction_x, direction_y, direction_z));
+        camera_front = normalize(xyz(direction_x, direction_y, direction_z), fallback=.{z=1});
 
         glEnable(GL_DEPTH_TEST);
         glClearColor(0.0, 0.0, 0.0, 1.0);
@@ -529,46 +529,47 @@ main :: () {
 
         Simp.swap_buffers(window);
     }
+}
 
-    create_texture :: (tex_image: string) -> GLuint {
-        new_texture : GLuint;
-        glGenTextures(1, *new_texture);
-        glBindTexture(GL_TEXTURE_2D, new_texture);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+setVec3 :: (shaderProgram: GLuint, uniform: *GLchar, x: float32, y: float32, z: float32) -> () {
+    uniform_loc := glGetUniformLocation(shaderProgram, uniform);
+    glUniform3f(uniform_loc, x, y, z);
+}
 
-        width, height, nrChannels : s32;
-        //stbi_set_flip_vertically_on_load(true);
-        data := stbi_load(to_c_string(tprint("../run_tree/textures/%", tex_image)), *width, *height, *nrChannels, 0);
-        format : GLenum;
-        if nrChannels == 1 {
-            format = GL_RED;
-        } else if nrChannels == 3 {
-            format = GL_RGB;
-        } else if nrChannels == 4 {
-            format = GL_RGBA;
-        }
-        if data {
-            glTexImage2D(GL_TEXTURE_2D, 0, xx format, xx width, xx height, 0, format, GL_UNSIGNED_BYTE, data);
-            glGenerateMipmap(GL_TEXTURE_2D);
-        } else {
-            print("ERROR: Failed to load texture\n");
-        }
-        stbi_image_free(data);
+setFloat :: (shaderProgram: GLuint, uniform: *GLchar, f: float32) -> () {
+    uniform_loc := glGetUniformLocation(shaderProgram, uniform);
+    glUniform1f(uniform_loc, f);
+}
 
-        return new_texture;
+create_texture :: (tex_image: string) -> GLuint {
+    new_texture : GLuint;
+    glGenTextures(1, *new_texture);
+    glBindTexture(GL_TEXTURE_2D, new_texture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    width, height, nrChannels : s32;
+    //stbi_set_flip_vertically_on_load(true);
+    data := stbi_load(to_c_string(tprint("../run_tree/textures/%", tex_image)), *width, *height, *nrChannels, 0);
+    format : GLenum;
+    if nrChannels == 1 {
+        format = GL_RED;
+    } else if nrChannels == 3 {
+        format = GL_RGB;
+    } else if nrChannels == 4 {
+        format = GL_RGBA;
     }
+    if data {
+        glTexImage2D(GL_TEXTURE_2D, 0, xx format, xx width, xx height, 0, format, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    } else {
+        print("ERROR: Failed to load texture\n");
+    }
+    stbi_image_free(data);
 
-    setVec3 :: (shaderProgram: GLuint, uniform: *GLchar, x: float32, y: float32, z: float32) -> () {
-        uniform_loc := glGetUniformLocation(shaderProgram, uniform);
-        glUniform3f(uniform_loc, x, y, z);
-    }
-    setFloat :: (shaderProgram: GLuint, uniform: *GLchar, f: float32) -> () {
-        uniform_loc := glGetUniformLocation(shaderProgram, uniform);
-        glUniform1f(uniform_loc, f);
-    }
+    return new_texture;
 }
 
 deg_to_rad :: (deg: float) -> float {
