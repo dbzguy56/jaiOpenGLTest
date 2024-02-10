@@ -110,7 +110,7 @@ texCoords :: float32.[
 ];
 */
 main :: () {
-    init_time();
+
 
     set_working_directory(path_strip_filename(get_path_of_running_executable()));
     window := create_window(1920, 1080, "openglTest");
@@ -309,7 +309,7 @@ main :: () {
             if it.type == .KEYBOARD && it.key_pressed && it.key_code == .BACKSPACE then running = false;
         }
 
-        current_frame : float32 = xx get_time();
+        current_frame : float32 = xx seconds_since_init();
         delta_time = current_frame - last_frame;
         last_frame = current_frame;
         camera_speed := 5 * delta_time;
@@ -506,7 +506,7 @@ main :: () {
         for 0..9 {
             q : Quaternion;
             set_from_axis_and_angle(*q, 1.0, 0.3, 0.5,
-                                    deg_to_rad(xx (get_time() * (it + 1) * 20)));
+                                    deg_to_rad(xx (seconds_since_init() * (it + 1) * 20)));
             m_rotate := rotation_matrix(Matrix4, q);
             m_trans := make_translation_matrix4(cube_positions[it]);
 
